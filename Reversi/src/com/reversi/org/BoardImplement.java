@@ -64,16 +64,63 @@ public class BoardImplement implements Board{
 			changeRight(row, column, isWhitesTurn, opposite, color);
 			this.move[3] = false;
 		}
+
+		if (this.move[4] == true) {
+			changeAboveLeft(row, column, isWhitesTurn, opposite, color);
+			this.move[4] = false;
+		}
 		
+		if (this.move[5] == true) {
+			changeAboveRight(row, column, isWhitesTurn, opposite, color);
+			this.move[5] = false;
+		}
+
+		if (this.move[6] == true) {
+			changeBelowLeft(row, column, isWhitesTurn, opposite, color);
+			this.move[6] = false;
+		}
+		
+				
 		return true;
 		
-//		check above the current position and change 
-//		return ( checkabove( row, column, isWhitesTurn, opposite, color)
-//				|| checkbelow( row, column, isWhitesTurn, opposite, color) 
-//				|| checkright( row, column, isWhitesTurn, opposite, color)
-//				|| checkleft(row, column, isWhitesTurn, opposite, color));
+	}
 
+	private void changeBelowLeft(int row, char column, boolean isWhitesTurn, char opposite, char color) {
+		// TODO Auto-generated method stub
 		
+	}
+
+	private void changeAboveRight(int row, char column, boolean isWhitesTurn, char opposite, char color) {
+		int intCol = (int)column - 65;
+		int j = intCol + 1 ; 
+		int i = row-2;
+		
+		while (i >= 0 && j < Game.SIZE) {
+			if (boardArray[i][j] == opposite) {
+				boardArray[i][j] = color;
+				boardArray[row-1][intCol] = color;
+			}
+			else break;
+			i++;
+			j--;			
+		}
+	}
+
+	private void changeAboveLeft(int row, char column, boolean isWhitesTurn, char opposite, char color) {
+
+		int intCol = (int)column - 65;
+		int j = intCol - 1 ;
+		int i = row-2;
+		
+		while (i >= 0 && j >= 0) {
+			if (boardArray[i][j] == opposite) {
+				boardArray[i][j] = color;
+				boardArray[row-1][intCol] = color;
+			}
+			else break;
+			i++;
+			j++;
+		}
 	}
 
 	private void changeRight(int row, char column, boolean isWhitesTurn, char opposite, char color) {
@@ -133,6 +180,150 @@ public class BoardImplement implements Board{
 		}		
 	}
 
+
+	@Override
+	public void printBoard() {
+		
+//		Print top dashes
+		System.out.print("  ");
+		for (int i = 0; i<boardArray.length; i++)
+			System.out.print(" _ ");
+		System.out.println();
+
+//		Print the Array along with row numbers 
+		for (int i = 0; i<boardArray.length; i++) { 
+			for (int j=0; j<boardArray[0].length; j++) {
+				if (j==0) {
+					System.out.print(i+1);
+					System.out.print("|");
+				}
+				
+				System.out.print(" " + boardArray[i][j] + " ");
+				
+				if (j == ( boardArray[0].length - 1) ) {
+					System.out.print("|");
+					System.out.println();	
+				}
+					
+			}
+		}
+		
+//		Print the bottom dashes 
+		System.out.print("  ");		
+		for (int i = 0; i<boardArray.length; i++)
+			System.out.print(" _ ");
+		
+//		Print the Column letters
+		System.out.println();
+		System.out.print("  ");
+		for (int i = 0; i<boardArray.length; i++)
+			System.out.print(" " + (char)(i+65)+" ");
+			
+			
+	}
+
+	@Override
+	public boolean isMoveLegal(int row, char column, boolean isWhitesTurn) {
+
+		char opposite, color;
+		if (isWhitesTurn == true) {
+			opposite = 'b';
+			color = 'w';	
+		}
+		else {
+			opposite = 'w';
+			color = 'b';			
+		}
+		
+		int intCol = (int)column - 65;
+		//If the column and row names are illegal
+		if ((row > Game.SIZE) || (intCol+1 > Game.SIZE))
+			return false;
+		
+		//If there was already a piece
+		if (boardArray[row-1][intCol] != ' ') 
+			return false;
+		
+		//Check valid moves if any and set the move[] attributes accordingly 
+		boolean[] moveCheck = new boolean[8];
+		moveCheck [0] = checkabove( row, column, isWhitesTurn, opposite, color);
+		moveCheck[1] = checkbelow( row, column, isWhitesTurn, opposite, color);
+		moveCheck[2] = checkleft(row, column, isWhitesTurn, opposite, color);
+		moveCheck[3] = checkright( row, column, isWhitesTurn, opposite, color);
+		moveCheck[4] = checkAboveLeft(row, column, isWhitesTurn, opposite, color);
+		moveCheck[5] = checkAboveRight(row, column, isWhitesTurn, opposite, color);
+		moveCheck[6] = checkBelowLeft(row, column, isWhitesTurn, opposite, color);
+
+		//Return if a valid move exists
+		return ( moveCheck[0]||moveCheck[1]||moveCheck[2]||moveCheck[3]||
+				 moveCheck[4]||moveCheck[5]||moveCheck[6]);
+				
+	}
+
+	private boolean checkBelowLeft(int row, char column, boolean isWhitesTurn, char opposite, char color) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	private boolean checkAboveRight(int row, char column, boolean isWhitesTurn, char opposite, char color) {
+		boolean aboveRight = false;
+		int intCol = (int)column - 65;
+		int j = intCol + 1 ; 
+		int i = row-2;
+		
+		while (i >= 0 && j < Game.SIZE) {
+			if (i == row-2 && j == intCol+1  && boardArray[i][j]!=opposite) {
+				aboveRight = false;
+				break;
+			}
+			
+			if (boardArray[i][j] == ' ') {
+				aboveRight = false;
+				break;
+			}
+			
+			else if ( (i != row-2 || j != intCol+1) && boardArray[i][j]!=opposite) {
+				aboveRight = true;
+				this.move[5] = true;
+				break;
+			}
+			i--;
+			j++;		
+		}
+		
+		return aboveRight;
+	}	
+	
+	private boolean checkAboveLeft(int row, char column, boolean isWhitesTurn, char opposite, char color) {
+		boolean aboveLeft = false;
+		int intCol = (int)column - 65;
+		int j = intCol - 1 ;
+		int i = row-2;
+		
+		while (i >= 0 && j >= 0) {
+			if (i == row-2 && j == intCol-1  && boardArray[i][j]!=opposite) {
+				aboveLeft = false;
+				break;
+			}
+			
+			if (boardArray[i][j] == ' ') {
+				aboveLeft = false;
+				break;
+			}
+			
+			else if ( (i != row-2 || j != intCol-1) && boardArray[i][j]!=opposite) {
+				aboveLeft = true;
+				this.move[4] = true;
+				break;
+			}
+			i--;
+			j--;		
+		}
+		
+		return aboveLeft;
+	}
+
+	
 	private boolean checkleft(int row, char column, boolean isWhitesTurn, char opposite, char color) {
 		boolean left = false;
 		int intCol = (int)column - 65;
@@ -248,95 +439,7 @@ public class BoardImplement implements Board{
 				
 		return up;
 		
-	}
-
-	@Override
-	public void printBoard() {
-		
-//		Print top dashes
-		System.out.print("  ");
-		for (int i = 0; i<boardArray.length; i++)
-			System.out.print(" _ ");
-		System.out.println();
-
-//		Print the Array along with row numbers 
-		for (int i = 0; i<boardArray.length; i++) { 
-			for (int j=0; j<boardArray[0].length; j++) {
-				if (j==0) {
-					System.out.print(i+1);
-					System.out.print("|");
-				}
-				
-				System.out.print(" " + boardArray[i][j] + " ");
-				
-				if (j == ( boardArray[0].length - 1) ) {
-					System.out.print("|");
-					System.out.println();	
-				}
-					
-			}
-		}
-		
-//		Print the bottom dashes 
-		System.out.print("  ");		
-		for (int i = 0; i<boardArray.length; i++)
-			System.out.print(" _ ");
-		
-//		Print the Column letters
-		System.out.println();
-		System.out.print("  ");
-		for (int i = 0; i<boardArray.length; i++)
-			System.out.print(" " + (char)(i+65)+" ");
-			
-			
-	}
-
-	@Override
-	public boolean isMoveLegal(int row, char column, boolean isWhitesTurn) {
-
-		char opposite, color;
-		if (isWhitesTurn == true) {
-			opposite = 'b';
-			color = 'w';	
-		}
-		else {
-			opposite = 'w';
-			color = 'b';			
-		}
-		
-		int intCol = (int)column - 65;
-//		If the column and row names are illegal
-		if ((row > Game.SIZE) || (intCol+1 > Game.SIZE))
-			return false;
-		
-//		If there was already a coin
-		if (boardArray[row-1][intCol] != ' ') 
-			return false;
-		
-		return ( checkabove( row, column, isWhitesTurn, opposite, color)
-				|| checkbelow( row, column, isWhitesTurn, opposite, color) 
-				|| checkright( row, column, isWhitesTurn, opposite, color)
-				|| checkleft(row, column, isWhitesTurn, opposite, color));
-		
-		
-////		if ((boardArray[Math.max(0, row-2)][intCol] != ' ') || (boardArray[Math.max(0, row)][intCol] != ' ') || 
-////				(boardArray[row-1][Math.max(0,intCol-1)] != ' ') || (boardArray[row-1][Math.max(0,intCol)] != ' '));
-//		
-//		
-////		Look on top
-//		for (int i = row-2; i >= 0; i--) {
-//			if ( boardArray[i][intCol] == player )
-//				return true;
-//		}
-//		
-////		Look below		
-//		for (int i = row; i < Game.SIZE; i++ ) {
-//			if ( boardArray[i][intCol] == player )
-//				return true;			
-//		}
-		
-	}
-
+	}	
 	@Override
 	public boolean isGameOver(boolean isWhiteTurn) {
 		// TODO Auto-generated method stub
